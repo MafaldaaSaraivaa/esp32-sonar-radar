@@ -21,11 +21,8 @@ void setup() {
 
     while(WiFi.status() != WL_CONNECTED){
         delay(2000);
-        Serial.print("Wifi ainda não está ligado!");
         Serial.print(WiFi.status());
-    }
-    
-    Serial.print("Wifi ligado!!");
+    } 
 }
 
 long medirdistancia(){
@@ -44,9 +41,9 @@ long medirdistancia(){
 
 void loop() {
 
-    for (int angulo = 0; angulo <= 180; angulo++){
+    for (int angulo = 0; angulo <= 180; angulo = angulo + 5){
         servo.write (angulo);
-        delay(200);
+        delay(223);
 
         long d = medirdistancia();
 
@@ -55,9 +52,9 @@ void loop() {
         Serial.println(d);
     }
 
-    for (int angulo = 179; angulo >= 0; angulo--){
+    for (int angulo = 179; angulo >= 0; angulo = angulo -5){
         servo.write (angulo);
-        delay(200);
+        delay(223);
 
         long d = medirdistancia();
 
@@ -65,5 +62,4 @@ void loop() {
         Serial.print(",");
         Serial.println(d);
     }
-
 }
