@@ -52,7 +52,7 @@ void loop() {
         Serial.println(d);
     }
 
-    for (int angulo = 179; angulo >= 0; angulo = angulo -5){
+    for (int angulo = 175; angulo >= 0; angulo = angulo -5){
         servo.write (angulo);
         delay(223);
 
