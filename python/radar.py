@@ -7,7 +7,7 @@ PORT = "COM4"
 BAUD_RATE = 115200
 TIMEOUT = 1
 
-array = [np.nan] * 181
+array = np.full(181, np.nan)
 
 def parse_line(raw):
     """Recebe os bytes de uma linha e devolve (angulo, distancia) ou None."""
@@ -39,39 +39,50 @@ def main():
         ser.readline()              
 
         try:
-            last_angle = None
+            last_angle = None 
             rejections = 0
-            while True:
-                result = parse_line(ser.readline())
-                if result is None:
-                    continue
 
-                angle, distance = result
+            def update():
+                nonlocal last_angle, rejections
 
-                if last_angle is None:
-                    last_angle = angle
+                while ser.in_waiting:
+                    result = parse_line(ser.readline())
+                    if result is None:
+                        continue
+
+                    angle, distance = result
+
+                    if last_angle is None:
+                        last_angle = angle
                 
-                if abs(angle - last_angle) not in (0, 5):
-                    rejections = rejections + 1
-                    if rejections == 10:
-                        last_angle = None
+                    if abs(angle - last_angle) not in (0, 5):
+                        rejections = rejections + 1
+                        if rejections == 10:
+                            last_angle = None
+                            rejections = 0
+                        continue
+                    else: 
+                        last_angle = angle
                         rejections = 0
-                    continue
-                else: 
-                    last_angle = angle
-                    rejections = 0
 
-                if not 2 <= distance <= 400:
-                    distance = np.nan
+                    if not 2 <= distance <= 400:
+                        distance = np.nan
                     
-                array[angle] = distance  # armazena a distância no array    
-                x, y = convert_to_cartesian(angle, distance)
-                print(f"Angle: {angle}, Distance: {distance}, X: {x}, Y: {y}")
+                    array[angle] = distance  # armazena a distância no array  
+
+            last_count = 0
+
+            while True:
+                update()
+                filled = np.count_nonzero(~np.isnan(array))
+                if filled != last_count:
+                    print(filled)
+                    last_count = filled
+                time.sleep(0.05)
 
             
         except KeyboardInterrupt:
             print("A terminar...")
-
 
 if __name__ == "__main__":
     main()
