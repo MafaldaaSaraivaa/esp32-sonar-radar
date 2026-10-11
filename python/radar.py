@@ -2,6 +2,8 @@ import serial
 import time
 import math
 import numpy as np
+import pyqtgraph as pg
+from pyqtgraph.Qt.QtCore import QTimer
 
 PORT = "COM4"
 BAUD_RATE = 115200
@@ -70,16 +72,33 @@ def main():
                     
                     array[angle] = distance  # armazena a distância no array  
 
-            last_count = 0
+            app = pg.mkQApp()
 
-            while True:
+            win = pg.PlotWidget(); win.setAspectLocked(True); win.setXRange(-100, 100); win.setYRange(0, 100)
+
+            scatter = pg.ScatterPlotItem(size=5, pen=pg.mkPen(None), brush=pg.mkBrush(255, 255, 255, 120))
+            win.addItem(scatter)
+
+            def draw():
+                x = []
+                y = []
+                for angle in range(181):
+                    distance = array[angle]
+                    if not np.isnan(distance):
+                        x_coord, y_coord = convert_to_cartesian(angle, distance)
+                        x.append(x_coord)
+                        y.append(y_coord)
+                scatter.setData(x, y)
+
+            def tick():
                 update()
-                filled = np.count_nonzero(~np.isnan(array))
-                if filled != last_count:
-                    print(filled)
-                    last_count = filled
-                time.sleep(0.05)
+                draw()
 
+            timer = QTimer(); timer.timeout.connect(tick); timer.start(50)
+
+            win.resize(900, 450)
+
+            win.show(); app.exec()
             
         except KeyboardInterrupt:
             print("A terminar...")
