@@ -103,6 +103,7 @@ A interface gráfica desenvolvida em `radar.py` renderiza um radar polar de tom 
 - **Feixe de Varrimento:** Acompanha sintonizadamente a rotação do servo de $0^\circ$ a $180^\circ$.
 - **Deteção de Alvos:** Desenha pontos vermelhos em coordenadas cartesianas $(x, y)$ convertidas a partir das leituras polares $(r, \theta)$, identificando obstáculos com precisão no intervalo de $2\text{ cm}$ a $200\text{ cm}$.
 
+![Interface Gráfica do Radar](imagens/Radar_Visualização.png)
 ---
 
 ## Conclusão
